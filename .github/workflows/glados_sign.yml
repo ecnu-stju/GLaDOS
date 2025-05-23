@@ -3,7 +3,7 @@ name: GLaDOS Sign-in Workflow
 on:
   schedule:
     # 每天一次的定时任务（根据需要调整频率）
-    - cron: "10 16 * * *"  # 0 0 * * * 表示每天午夜执行
+    - cron: "40 17 * * *"  # 0 0 * * * 表示每天午夜执行
   workflow_dispatch:
     # 手动触发工作流
     
