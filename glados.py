@@ -29,7 +29,7 @@ def generate_headers(cookie):
         "Authorization": "9876543210987654321098765432109-1234-567",
         "Content-Type": "application/json;charset=UTF-8",
         "Cookie": cookie,
-        "Origin": "https://glados.rocks",
+        "Origin": "https://glados.cloud",
         "Sec-Ch-Ua": '"Not-A.Brand";v="99", "Chromium";v="124"',
         "Sec-Ch-Ua-Mobile": "?0",
         "Sec-Ch-Ua-Platform": '"Windows"',
@@ -64,7 +64,7 @@ def send_notification(sign_messages, status_messages, bot_token, chat_id):
         print(f"发送 Telegram 消息失败: {e}")
 
 def check_account_status(email, cookie, proxy):
-    url = "https://glados.rocks/api/user/status"
+    url = "https://glados.cloud/api/user/status"
     headers = generate_headers(cookie)
     try:
         response = requests.get(url, headers=headers, proxies=proxy, timeout=10)
@@ -78,7 +78,7 @@ def check_account_status(email, cookie, proxy):
         return f"<b>{email}</b>: 解析响应失败 - {str(e)} ❌"
 
 def sign(email, cookie, proxy):
-    url = "https://glados.rocks/api/user/checkin"
+    url = "https://glados.cloud/api/user/checkin"
     headers = generate_headers(cookie)
     data = {"token": "glados.one"}
     try:
