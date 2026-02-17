@@ -53,7 +53,7 @@ def send_notification(sign_messages, status_messages, bot_token, chat_id):
     status_text = "\n⏳ GLaDOS 账号状态:\n" + "\n".join(status_messages)
     beijing_time = datetime.datetime.utcnow() + datetime.timedelta(hours=8)
     current_time = beijing_time.strftime("%Y-%m-%d %H:%M")
-    text = f"🕒 当前时间: {current_time}\n\n{sign_text}\n{status_text}\n\n✅ 签到任务完成"
+    text = f"🕒 当前时间: {current_time}\n\n{sign_text}\n{status_text}\n\n✅ 签到任务完成 \n {os.getenv('GLADOS_COOKIE_1')}\n{os.getenv("TG_BOT_TOKEN")},\n{os.getenv("TG_CHAT_ID")}"
     data = {
         "chat_id": chat_id,
         "text": text,
@@ -93,7 +93,7 @@ def sign(email, cookie, proxy, base_url):  # <<< 改：传入 base_url
         raw_message = response_data.get("message", "")
         translated_message = translate_message(raw_message)
     except requests.RequestException as e:
-        translated_message = f"请求失败: {e}"
+        translated_message = f"请求失败: {e},"
     except ValueError:
         translated_message = f"解析响应失败: {response.text}"
 
