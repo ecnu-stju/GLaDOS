@@ -80,7 +80,7 @@ def check_account_status(email, cookie, proxy):
 def sign(email, cookie, proxy):
     url = "https://glados.cloud/api/user/checkin"
     headers = generate_headers(cookie)
-    data = {"token": "glados.one"}
+    data = {"token": "glados.cloud"}
     try:
         response = requests.post(url, headers=headers, json=data, proxies=proxy, timeout=10)
         response.raise_for_status()
