@@ -3,6 +3,7 @@ import datetime
 import random
 import os
 import time
+from urllib.parse import urlparse  # <<< 新增
 from dotenv import load_dotenv
 
 def translate_message(raw_message):
@@ -16,7 +17,7 @@ def translate_message(raw_message):
     else:
         return f"未知的签到结果: {raw_message} ❓"
 
-def generate_headers(cookie):
+def generate_headers(cookie, base_url):  # <<< 改：传入 base_url
     user_agents = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
         "Mozilla/5.0 (Linux; Android 10; zh-CN; SM-G9750) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
@@ -29,7 +30,8 @@ def generate_headers(cookie):
         "Authorization": "9876543210987654321098765432109-1234-567",
         "Content-Type": "application/json;charset=UTF-8",
         "Cookie": cookie,
-        "Origin": "https://glados.rocks",
+        "Origin": base_url,  # <<< 改
+        "Referer": f"{base_url}/console/checkin",  # <<< 新增（可选，但建议加）
         "Sec-Ch-Ua": '"Not-A.Brand";v="99", "Chromium";v="124"',
         "Sec-Ch-Ua-Mobile": "?0",
         "Sec-Ch-Ua-Platform": '"Windows"',
@@ -38,7 +40,7 @@ def generate_headers(cookie):
         "Sec-Fetch-Site": "same-origin",
         "User-Agent": random.choice(user_agents)
     }
-
+    
 def format_days(days_str):
     days = float(days_str)
     if days.is_integer():
@@ -63,9 +65,9 @@ def send_notification(sign_messages, status_messages, bot_token, chat_id):
     except requests.RequestException as e:
         print(f"发送 Telegram 消息失败: {e}")
 
-def check_account_status(email, cookie, proxy):
+def check_account_status(email, cookie, proxy, base_url):
     url = "https://glados.rocks/api/user/status"
-    headers = generate_headers(cookie)
+    headers = generate_headers(cookie , base_url)
     try:
         response = requests.get(url, headers=headers, proxies=proxy, timeout=10)
         response.raise_for_status()
@@ -131,7 +133,7 @@ def multi_account_sign():
     for email, cookie in accounts:
         sign_result = sign(email, cookie, proxy, base_url)  # <<< 改
         sign_messages.append(sign_result)
-        status_result = check_account_status(email, cookie, proxy)
+        status_result = check_account_status(email, cookie, proxy, base_url)
         status_messages.append(status_result)
         time.sleep(random.randint(5, 15))
 
