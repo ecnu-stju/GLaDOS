@@ -77,10 +77,13 @@ def check_account_status(email, cookie, proxy):
     except (KeyError, ValueError) as e:
         return f"<b>{email}</b>: 解析响应失败 - {str(e)} ❌"
 
-def sign(email, cookie, proxy):
-    url = "https://glados.cloud/api/user/checkin"
-    headers = generate_headers(cookie)
-    data = {"token": "glados.cloud"}
+def sign(email, cookie, proxy, base_url):  # <<< 改：传入 base_url
+    url = f"{base_url}/api/user/checkin"  # <<< 改
+    headers = generate_headers(cookie, base_url)  # <<< 改
+
+    token = urlparse(base_url).hostname  # <<< 改：token 跟网页端一致（当前域名）
+    data = {"token": token}
+
     try:
         response = requests.post(url, headers=headers, json=data, proxies=proxy, timeout=10)
         response.raise_for_status()
@@ -91,7 +94,7 @@ def sign(email, cookie, proxy):
         translated_message = f"请求失败: {e}"
     except ValueError:
         translated_message = f"解析响应失败: {response.text}"
-    
+
     beijing_time = datetime.datetime.utcnow() + datetime.timedelta(hours=8)
     log_message = f"{beijing_time.strftime('%Y-%m-%d %H:%M')} {email}: {translated_message}"
     print(log_message)
@@ -99,6 +102,9 @@ def sign(email, cookie, proxy):
 
 def multi_account_sign():
     load_dotenv()
+
+    base_url = os.getenv("GLADOS_BASE_URL", "https://glados.cloud").rstrip("/")  # <<< 新增（可选：可写进 .env）
+
     bot_token = os.getenv("TG_BOT_TOKEN")
     chat_id = os.getenv("TG_CHAT_ID")
     proxy = {
@@ -123,7 +129,7 @@ def multi_account_sign():
     sign_messages = []
     status_messages = []
     for email, cookie in accounts:
-        sign_result = sign(email, cookie, proxy)
+        sign_result = sign(email, cookie, proxy, base_url)  # <<< 改
         sign_messages.append(sign_result)
         status_result = check_account_status(email, cookie, proxy)
         status_messages.append(status_result)
